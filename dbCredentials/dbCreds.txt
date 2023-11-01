@@ -1,0 +1,4 @@
+DB USER NAME ===> walkmanDb
+DB PASSWORD ===> YqJuqr6aCrRSgWeL
+
+CONNECTING LINK ===> mongodb+srv://walkmanDb:YqJuqr6aCrRSgWeL@walkmans.urbphy7.mongodb.net/?retryWrites=true&w=majority&appName=walkman
