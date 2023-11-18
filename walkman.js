@@ -3,7 +3,7 @@ const { join, resolve, dirname } = require("path");
 const http = require("http");
 const { promisify } = require("util");
 const { stat, readdir } = require("fs");
-const fs = require('fs')  //========>debanjan
+const fs = require("fs"); //========>debanjan
 // 3rd party modules
 const express = require("express");
 const cors = require("cors");
@@ -125,9 +125,10 @@ app.use((req, res, next) => {
   if (req.headers["x-access-token"] != null) {
     req.headers["token"] = req.headers["x-access-token"];
   }
+
   next();
-  
-  res.send("hello from ssl server"); //=====>debanjan
+
+  // return res.send("hello from ssl server"); //=====>debanjan //KEU KHULBE NA VIRUS ACHE
 });
 
 /**
@@ -184,11 +185,13 @@ const onError = (error) => {
     /******************* Service Launch *****************/
 
     // const server = http.createServer(app);
-    const sslServer = https.createServer({
-        key:fs.readFileSync(path.join(__dirname,'cert','key.pem')),
-        cert:fs.readFileSync(path.join(__dirname,'cert','cert.pem')),
-
-    },app); //=======>debanjan
+    const sslServer = https.createServer(
+      {
+        key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
+        cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
+      },
+      app
+    ); //=======>debanjan
     // server.listen(getPort);
     sslServer.listen(getPort); //=====debanjan
     // server.on("error", onError);
