@@ -59,6 +59,7 @@ namedRouter.post("admin.updateAdminPassword", '/update/admin-password', request_
 // User List
 namedRouter.get("user.list", '/user/list', userController.userList);
 
+
 // Get All User
 namedRouter.post("user.getall", '/user/getall', async (req, res) => {
 	try {
