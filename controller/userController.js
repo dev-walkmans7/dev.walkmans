@@ -8,6 +8,7 @@ const roleRepo = require("../repositories/roleRepo.js");
 const config = require("../config/config.js");
 const mailer = require("../helper/mailer.js");
 const User = new userModel();
+//HI
 
 class userController {
   constructor() {}
