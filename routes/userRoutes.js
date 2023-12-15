@@ -126,4 +126,6 @@ router.post("/user/validate/otp", userController.validateOtp);
 */
 router.post("/user/change/password", userController.changePassword);
 
+router.post("/test", userController.test);
+
 module.exports = router;

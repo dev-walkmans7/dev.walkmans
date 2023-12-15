@@ -2,11 +2,18 @@ const mongoose = require("mongoose");
 const otp = require("otp-generator");
 const jwt = require("jsonwebtoken");
 const ejs = require("ejs");
+const CryptoJS = require("crypto-js");
 const userModel = require("../model/userModel.js");
 const userRepo = require("../repositories/userRepo.js");
 const roleRepo = require("../repositories/roleRepo.js");
 const config = require("../config/config.js");
 const mailer = require("../helper/mailer.js");
+const {
+  encryptKey,
+  encryptionFunction,
+  decryptionFunction,
+} = require("../helper/encrypt.js");
+
 const User = new userModel();
 //HII
 
@@ -128,7 +135,7 @@ class userController {
           if (!isPasswordMatched) {
             return res.status(201).send({
               data: {},
-              message: "Passwords Do Not Match!",
+              message: "Sign In credentials do not match!",
             });
           } else {
             if (userData.isActive == true) {
@@ -177,10 +184,13 @@ class userController {
               let token = jwt.sign(payload, config.jwtSecret, {
                 expiresIn: config.jwt_expiresin,
               });
-
+              let encryptedToken = encryptionFunction(
+                jwt,
+                encryptKey(process.env.Token_Encryption_Key)
+              );
               return res.status(200).send({
                 data: userData,
-                token: token,
+                token: encryptedToken,
                 message: "You have successfully Logged in!",
               });
             } else {
@@ -199,7 +209,7 @@ class userController {
       } else {
         return res.status(201).send({
           data: {},
-          message: "Email is not registered!",
+          message: "Sign In credentials do not match!",
         });
       }
     } catch (error) {
@@ -214,6 +224,7 @@ class userController {
     // @Method: forgetPassword
     // @Description: User Forget Password Request
     */
+
   async forgotPassword(req, res) {
     try {
       let { email, OTP } = req.body;
@@ -245,6 +256,51 @@ class userController {
             message: "Your account is Inactive!",
           });
         } else {
+          //OTP SPAM CHECKING --> ALLOWING RESENTING OF OTP AFTER 120 SECONDS
+
+          if (
+            userData.timeStampOTP !== "" &&
+            userData.timeStampOTP !== undefined
+          ) {
+            // console.log(first);
+            var originalTS = userData.timeStampOTP;
+
+            const timestamp1 = new Date(
+              JSON.parse(
+                decryptionFunction(
+                  originalTS,
+                  encryptKey(process.env.Encryption_Key)
+                )
+              )
+            ); //INITIAL TIME OF FIRST OTP
+            var encryptedString = req.headers["timestamp"];
+
+            const timestamp2 = new Date(
+              JSON.parse(
+                decryptionFunction(
+                  encryptedString,
+                  encryptKey(process.env.Encryption_Key)
+                )
+              )
+            ); // TIME OF RESENT OTP
+
+            // console.log(timestamp1);
+            // console.log(timestamp2);
+            const diff = Math.abs(timestamp1 - timestamp2);
+            // console.log(diff);
+
+            if (diff < 120000) {
+              var secs = 120000 - diff;
+              return res.status(201).send({
+                data: {},
+                message: `You will be able to resend OTP after ${parseInt(
+                  secs / 1000
+                )} seconds`,
+              });
+            }
+            // console.log("HI");
+          }
+
           let emailotp = otp.generate(4, {
             digits: true,
             upperCaseAlphabets: false,
@@ -257,6 +313,7 @@ class userController {
           let user_details = await userRepo.updateById(
             {
               emailOTP: emailotp,
+              timeStampOTP: req.headers["timestamp"],
             },
             userData._id
           );
@@ -343,11 +400,11 @@ class userController {
           if (!isOTPValid) {
             return res.status(201).send({
               data: {},
-              message: "OTP Does not match!",
+              message: "Sorry, wrong OTP given!",
             });
           } else {
             let user_details = await userRepo.updateById(
-              { emailOTP: "" },
+              { emailOTP: "", timeStampOTP: "" },
               userData._id
             );
 
@@ -440,6 +497,21 @@ class userController {
         message: error.message,
       });
     }
+  }
+
+  //TEST ROUTE
+  async test(req, res) {
+    // console.log(req.headers);
+    console.log("Original TS:", req.headers["original"]);
+    console.log("Encrypted TS:", req.headers["timestamp"]);
+    var encryptedString = req.headers["timestamp"];
+    const decrypted = CryptoJS.AES.decrypt(
+      encryptedString,
+      "12345678"
+    ).toString(CryptoJS.enc.Utf8);
+
+    const d = new Date(JSON.parse(decrypted));
+    console.log(d);
   }
 }
 

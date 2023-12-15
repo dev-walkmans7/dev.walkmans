@@ -23,6 +23,7 @@ var UserSchema = new Schema(
     register_type: { type: String, default: "normal", enum: registertype },
     last_active: { type: Date, default: null },
     last_login_date: { type: Date, default: null },
+    timeStampOTP: { type: String, default: "" },
     emailOTP: { type: String, default: "" },
     isEmailVerified: { type: Boolean, default: false, enum: bools },
     isTwoFactorEnaled: { type: Boolean, default: false, enum: bools },
