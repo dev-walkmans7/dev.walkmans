@@ -465,6 +465,16 @@ class userController {
             message: "Your account is inactive!",
           });
         } else {
+          let isPasswordMatched = User.validPassword(
+            password,
+            userData.password
+          );
+          if (isPasswordMatched) {
+            return res.status(201).send({
+              data: {},
+              message: "New Password cannot be same as Old Password!",
+            });
+          }
           password = User.generateHash(password);
           // console.log(userData.full_name);
           let updatedUser = await userModel.findByIdAndUpdate(
