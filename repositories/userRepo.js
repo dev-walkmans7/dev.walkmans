@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../model/userModel.js");
+const userModel = require("../model/userModel.js");
 // const perPage = config.PAGINATION_PERPAGE;
 
 const userRepository = {
@@ -255,6 +256,26 @@ const userRepository = {
 
   deleteByField: async (field, fieldValue) => {
     //todo: Implement delete by field
+  },
+
+  updateBio: async (newBio, bio_id, id) => {
+    try {
+      let user = await User.findById(id);
+      if (user) {
+        (user.bio.full_name = newBio.full_name),
+          (user.bio.highlight = newBio.highlight),
+          (user.bio.headline = newBio.headline);
+        await user.save();
+        if (!user) {
+          return null;
+        }
+        return user;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw error;
+    }
   },
 
   updateById: async (data, id) => {

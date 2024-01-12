@@ -104,8 +104,20 @@ const fs = require("fs");
 //   const predictions = makePredictions(inputData, modelParams);
 //   console.log("Predictions:", predictions);
 // }
-let encrypted = CryptoJS.AES.encrypt(
-  JSON.stringify(timestamp),
-  encryptKey(data)
+// let encrypted = CryptoJS.AES.encrypt(
+//   JSON.stringify(timestamp),
+//   encryptKey(data)
+// ).toString();
+// console.log("Log", encrypted);
+
+let encryptedText = CryptoJS.AES.encrypt(
+  "Hi",
+  "uYef8kmdy28vnsdie$dmcmwsbxt2"
 ).toString();
-console.log("Log", encrypted);
+console.log(encryptedText);
+
+let decryptedText = CryptoJS.AES.decrypt(
+  encryptedText,
+  "uYef8kmdy28vnsdie$dmcmwsbxt2"
+).toString(CryptoJS.enc.Utf8);
+console.log(decryptedText);

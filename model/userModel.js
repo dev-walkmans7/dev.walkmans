@@ -6,6 +6,12 @@ const bools = [true, false];
 const registertype = ["normal", "google"];
 const deviceType = ["ios", "android", "web"];
 
+const bioSchema = new Schema({
+  full_name: { type: String, default: "" },
+  headline: { type: String, default: "" },
+  highlight: { type: String, default: "" },
+});
+
 var UserSchema = new Schema(
   {
     full_name: { type: String, default: "" },
@@ -30,9 +36,28 @@ var UserSchema = new Schema(
     isProfileComplete: { type: Boolean, default: false, enum: bools },
     isActive: { type: Boolean, default: true, enum: bools },
     isDeleted: { type: Boolean, default: false, enum: bools },
+    bio: { type: bioSchema, default: {} },
+    about: { type: String, default: "" },
+    skills: { type: Array, default: [] },
   },
   { timestamps: true, versionKey: false }
 );
+
+UserSchema.pre("save", async function (next) {
+  // console.log("hi");
+  const user = this;
+  if (user.isModified("full_name")) {
+    user.bio = user.bio || {};
+    user.bio.full_name = user.full_name;
+  }
+  if (user.bio.isModified("full_name")) {
+    console.log("yes");
+    user.full_name = user.bio.full_name;
+    // await user.save();
+  }
+
+  next();
+});
 
 // generating a hash
 UserSchema.methods.generateHash = function (password) {
