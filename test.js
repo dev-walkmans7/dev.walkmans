@@ -110,14 +110,21 @@ const fs = require("fs");
 // ).toString();
 // console.log("Log", encrypted);
 
-let encryptedText = CryptoJS.AES.encrypt(
-  "Hi",
-  "uYef8kmdy28vnsdie$dmcmwsbxt2"
-).toString();
-console.log(encryptedText);
+// let encryptedText = CryptoJS.AES.encrypt(
+//   "Hi",
+//   "uYef8kmdy28vnsdie$dmcmwsbxt2"
+// ).toString();
+// console.log(encryptedText);
 
-let decryptedText = CryptoJS.AES.decrypt(
-  encryptedText,
-  "uYef8kmdy28vnsdie$dmcmwsbxt2"
-).toString(CryptoJS.enc.Utf8);
-console.log(decryptedText);
+// let decryptedText = CryptoJS.AES.decrypt(
+//   encryptedText,
+//   "uYef8kmdy28vnsdie$dmcmwsbxt2"
+// ).toString(CryptoJS.enc.Utf8);
+// console.log(decryptedText);
+const a = { title: "hi", no: 3 };
+let b = [
+  { title: "hello", no: 1 },
+  { title: "hola", no: 2 },
+];
+b = [...b, a];
+console.log(b);

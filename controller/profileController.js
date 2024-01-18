@@ -33,8 +33,10 @@ class profileController {
         type = 4;
       } else if (req.body.type == "projects") {
         type = 5;
-      } else {
+      } else if (req.body.type == "delete experience") {
         type = 6;
+      } else {
+        type = 7;
       }
 
       switch (type) {
@@ -181,8 +183,152 @@ class profileController {
           // console.log(skills);
           break;
         case 4:
+          let experience = req.body.experience;
+          if (Object.keys(experience).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "Experience cannot be empty!",
+            });
+          }
+
+          //TITLE IS BLANK
+          if (
+            experience.title === null ||
+            experience.title === "" ||
+            experience.title === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Title cannot be empty!",
+            });
+          }
+
+          //COMPANY IS NOT PRESENT
+          if (
+            experience.company === null ||
+            experience.company === "" ||
+            experience.company === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Company cannot be empty!",
+            });
+          }
+
+          //LOCATION IS NOT PRESENT
+          if (
+            experience.locatoin === null ||
+            experience.location === "" ||
+            experience.location === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Location cannot be empty!",
+            });
+          }
+
+          //START DATE IS NOT PRESENT
+          if (
+            experience.startDate === null ||
+            experience.startDate === "" ||
+            experience.startDate === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Start Date cannot be empty!",
+            });
+          }
+          //END DATE IS NOT PRESENT
+          if (
+            experience.endDate === null ||
+            experience.endDate === "" ||
+            experience.endDate === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "End Date cannot be empty!",
+            });
+          }
+
+          if (
+            experience.image === null ||
+            experience.image === "" ||
+            experience.image === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Image cannot be empty!",
+            });
+          }
+
+          var userData = await userRepo.getById(req.user.id);
+
+          if (Object.keys(userData).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+          let exp = userData.experience;
+          exp = [...exp, experience];
+
+          const updatedUser = await userRepo.updateById(
+            { experience: exp },
+            userData._id
+          );
+
+          if (updatedUser) {
+            return res.status(200).send({
+              data: updatedUser,
+              message: "Experience updated!",
+            });
+          } else {
+            return res.status(201).send({
+              data: {},
+              message: "Something went wrong!",
+            });
+          }
+
           break;
         case 5:
+          break;
+        case 6:
+          if (
+            req.headers["expid"] === null ||
+            req.headers["expid"] === "" ||
+            req.headers["expid"] === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Something went wrong",
+            });
+          }
+
+          let user = await userRepo.getById(req.user.id);
+
+          if (Object.keys(user).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          const update = {
+            $pull: {
+              experience: { _id: req.headers["expid"] },
+            },
+          };
+
+          const updatedUserDel = await userModel.updateOne(
+            { _id: req.user.id },
+            update
+          );
+          if (updatedUserDel) {
+            return res.status(200).send({
+              data: updatedUserDel,
+              message: "Experience Deleted!",
+            });
+          }
           break;
         default:
           return res.status(201).send({
@@ -198,6 +344,7 @@ class profileController {
       });
     }
   }
+
   // async test(req, res) {
   //   console.log(req.body);
   //   console.log(req.user.id);

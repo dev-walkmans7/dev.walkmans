@@ -12,6 +12,15 @@ const bioSchema = new Schema({
   highlight: { type: String, default: "" },
 });
 
+const experienceSchema = new Schema({
+  title: { type: String, default: "" },
+  company: { type: String, default: "" },
+  location: { type: String, default: "" },
+  startDate: { type: String, default: "" },
+  endDate: { type: String, default: "" },
+  image: { type: String, default: "" },
+});
+
 var UserSchema = new Schema(
   {
     full_name: { type: String, default: "" },
@@ -39,6 +48,7 @@ var UserSchema = new Schema(
     bio: { type: bioSchema, default: {} },
     about: { type: String, default: "" },
     skills: { type: Array, default: [] },
+    experience: { type: [experienceSchema], default: [] },
   },
   { timestamps: true, versionKey: false }
 );
