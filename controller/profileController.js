@@ -128,7 +128,7 @@ class profileController {
               { about: about },
               userData._id
             );
-            console.log(updatedUser);
+            // console.log(updatedUser);
             if (updatedUser) {
               return res.status(200).send({
                 data: updatedUser,
@@ -475,9 +475,7 @@ class profileController {
     try {
       const userData = await userModel
         .findById(req.user.id)
-        .select("email bio about experience project profile_picture");
-
-      let completion = 15;
+        .select("email bio about skills experience project profile_picture");
 
       if (Object.keys(userData).length === 0) {
         return res.status(201).send({
@@ -486,8 +484,42 @@ class profileController {
         });
       }
 
+      let completion = 15;
+
+      //PROFILE PICTURE PRESENT
+      if (userData.profile_picture != "{}") {
+        completion = completion + 25;
+      }
+
+      //ABOUT PRESENT
+      if (
+        userData.about != null &&
+        userData.about != "" &&
+        userData.about != undefined
+      ) {
+        completion = completion + 15;
+      }
+
+      //SKILLS PRESENT
+      if (userData.skills.length > 0) {
+        completion = completion + 15;
+      }
+
+      //EXPERIENCE PRESENT
+      if (userData.experience.length > 0) {
+        completion = completion + 15;
+      }
+
+      // //PROJECTS PRESENT
+      if (userData.project.length > 0) {
+        completion = completion + 15;
+      }
+
       res.status(200).send({
-        data: userData,
+        data: {
+          profile: userData,
+          completion: completion,
+        },
         message: "Here is your profile",
       });
     } catch (error) {
