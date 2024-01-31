@@ -35,8 +35,10 @@ class profileController {
         type = 5;
       } else if (req.body.type == "delete experience") {
         type = 6;
-      } else {
+      } else if (req.body.type == "update experience") {
         type = 7;
+      } else {
+        type = 8;
       }
 
       switch (type) {
@@ -294,9 +296,9 @@ class profileController {
           break;
         case 6:
           if (
-            req.headers["expid"] === null ||
-            req.headers["expid"] === "" ||
-            req.headers["expid"] === undefined
+            req.body.expid === null ||
+            req.body.expid === "" ||
+            req.body.expid === undefined
           ) {
             return res.status(201).send({
               data: {},
@@ -315,7 +317,7 @@ class profileController {
 
           const update = {
             $pull: {
-              experience: { _id: req.headers["expid"] },
+              experience: { _id: req.body.expid },
             },
           };
 
@@ -330,12 +332,164 @@ class profileController {
             });
           }
           break;
+        case 7:
+          //EXPID NOT PRESENT
+          if (
+            req.body.expid === null ||
+            req.body.expid === "" ||
+            req.body.expid === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Something went wrong",
+            });
+          }
+
+          let experienceUpdated = req.body.experience;
+          if (Object.keys(experienceUpdated).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "Experience cannot be empty!",
+            });
+          }
+
+          //TITLE IS BLANK
+          if (
+            experienceUpdated.title === null ||
+            experienceUpdated.title === "" ||
+            experienceUpdated.title === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Title cannot be empty!",
+            });
+          }
+
+          //COMPANY IS NOT PRESENT
+          if (
+            experienceUpdated.company === null ||
+            experienceUpdated.company === "" ||
+            experienceUpdated.company === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Company cannot be empty!",
+            });
+          }
+
+          //LOCATION IS NOT PRESENT
+          if (
+            experienceUpdated.locatoin === null ||
+            experienceUpdated.location === "" ||
+            experienceUpdated.location === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Location cannot be empty!",
+            });
+          }
+
+          //START DATE IS NOT PRESENT
+          if (
+            experienceUpdated.startDate === null ||
+            experienceUpdated.startDate === "" ||
+            experienceUpdated.startDate === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Start Date cannot be empty!",
+            });
+          }
+          //END DATE IS NOT PRESENT
+          if (
+            experienceUpdated.endDate === null ||
+            experienceUpdated.endDate === "" ||
+            experienceUpdated.endDate === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "End Date cannot be empty!",
+            });
+          }
+
+          //IMAGE NOT PRESENT
+          if (
+            experienceUpdated.image === null ||
+            experienceUpdated.image === "" ||
+            experienceUpdated.image === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Image cannot be empty!",
+            });
+          }
+          let userExpUpdate = await userRepo.getById(req.user.id);
+
+          if (Object.keys(userExpUpdate).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          const updateExp = {
+            $set: {
+              "experience.$.title": experienceUpdated.title,
+              "experience.$.company": experienceUpdated.company,
+              "experience.$.location": experienceUpdated.location,
+              "experience.$.startDate": experienceUpdated.startDate,
+              "experience.$.endDate": experienceUpdated.endDate,
+              "experience.$.image": experienceUpdated.image,
+            },
+          };
+
+          let updateUserExpUpdate = await userModel.updateOne(
+            { _id: req.user.id, "experience._id": req.body.expid },
+            updateExp
+          );
+
+          if (updateUserExpUpdate) {
+            return res.status(200).send({
+              data: updateUserExpUpdate,
+              message: "Experience Updated!",
+            });
+          }
+
+          break;
         default:
           return res.status(201).send({
             data: {},
             message: "Wrong Type Provided!",
           });
       }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        data: {},
+        message: error.message,
+      });
+    }
+  }
+
+  async getExperience(req, res) {
+    try {
+      const userData = await userModel
+        .findById(req.user.id)
+        .select("email bio about experience project profile_picture");
+
+      let completion = 15;
+
+      if (Object.keys(userData).length === 0) {
+        return res.status(201).send({
+          data: {},
+          message: "Something went wrong!",
+        });
+      }
+
+      res.status(200).send({
+        data: userData,
+        message: "Here is your profile",
+      });
     } catch (error) {
       console.log(error);
       return res.status(500).send({
