@@ -475,7 +475,9 @@ class profileController {
     try {
       const userData = await userModel
         .findById(req.user.id)
-        .select("email bio about skills experience project profile_picture");
+        .select(
+          "email bio about skills experience project profile_picture isProfileComplete"
+        );
 
       if (Object.keys(userData).length === 0) {
         return res.status(201).send({
@@ -484,35 +486,47 @@ class profileController {
         });
       }
 
-      let completion = 15;
+      let completion = 20;
 
-      //PROFILE PICTURE PRESENT
-      if (userData.profile_picture != "{}") {
-        completion = completion + 25;
-      }
+      if (userData.isProfileComplete === false) {
+        //ABOUT PRESENT
+        if (
+          userData.about != null &&
+          userData.about != "" &&
+          userData.about != undefined
+        ) {
+          completion = completion + 20;
+        }
 
-      //ABOUT PRESENT
-      if (
-        userData.about != null &&
-        userData.about != "" &&
-        userData.about != undefined
-      ) {
-        completion = completion + 15;
-      }
+        //SKILLS PRESENT
+        if (userData.skills.length > 0) {
+          completion = completion + 20;
+        }
 
-      //SKILLS PRESENT
-      if (userData.skills.length > 0) {
-        completion = completion + 15;
-      }
+        //EXPERIENCE PRESENT
+        if (userData.experience.length > 0) {
+          completion = completion + 20;
+        }
 
-      //EXPERIENCE PRESENT
-      if (userData.experience.length > 0) {
-        completion = completion + 15;
-      }
+        // //PROJECTS PRESENT
+        if (userData.project.length > 0) {
+          completion = completion + 20;
+        }
+        if (completion === 100) {
+          let updatedUser = await userRepo.updateById(
+            { isProfileComplete: true },
+            userData._id
+          );
 
-      // //PROJECTS PRESENT
-      if (userData.project.length > 0) {
-        completion = completion + 15;
+          if (!updatedUser) {
+            res.status(201).send({
+              data: {},
+              message: "Something went wrong!",
+            });
+          }
+        }
+      } else {
+        completion = 100;
       }
 
       res.status(200).send({
