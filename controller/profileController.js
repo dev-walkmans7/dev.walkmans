@@ -479,6 +479,30 @@ class profileController {
                         });
                     }
 
+                    // SKILLS IS BLANK
+                    if (
+                        project.skills === null ||
+                        project.skills === "" ||
+                        project.skills === undefined
+                    ) {
+                        return res.status(201).send({
+                            data: {},
+                            message: "Skills cannot be empty!",
+                        });
+                    }
+
+                    // PROJECT LINK IS BLANK
+                    if (
+                        project.project_link === null ||
+                        project.project_link === "" ||
+                        project.project_link === undefined
+                    ) {
+                        return res.status(201).send({
+                            data: {},
+                            message: "Project link cannot be empty!",
+                        });
+                    }
+
                     var userDataProject = await userRepo.getById(req.user.id);
 
                     if (Object.keys(userDataProject).length === 0) {
