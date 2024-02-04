@@ -483,7 +483,8 @@ class profileController {
                     if (
                         project.skills === null ||
                         project.skills === "" ||
-                        project.skills === undefined
+                        project.skills === undefined ||
+                        project.skills.length === 0
                     ) {
                         return res.status(201).send({
                             data: {},
