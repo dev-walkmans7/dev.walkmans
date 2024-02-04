@@ -10,8 +10,15 @@ const encryptionFunction = (text, key) => {
 };
 
 const decryptionFunction = (text, key) => {
-  const decrypted = CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
-  return decrypted;
+  try {
+    const decrypted = CryptoJS.AES.decrypt(text, key).toString(
+      CryptoJS.enc.Utf8
+    );
+    // console.log(decrypted);
+    return decrypted;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = { encryptKey, encryptionFunction, decryptionFunction };

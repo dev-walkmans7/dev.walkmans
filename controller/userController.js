@@ -184,8 +184,9 @@ class userController {
               let token = jwt.sign(payload, config.jwtSecret, {
                 expiresIn: config.jwt_expiresin,
               });
+              // console.log(encryptKey(process.env.Token_Encryption_Key));
               let encryptedToken = encryptionFunction(
-                jwt,
+                token,
                 encryptKey(process.env.Token_Encryption_Key)
               );
               return res.status(200).send({

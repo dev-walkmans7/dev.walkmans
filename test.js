@@ -104,8 +104,79 @@ const fs = require("fs");
 //   const predictions = makePredictions(inputData, modelParams);
 //   console.log("Predictions:", predictions);
 // }
+// let encrypted = CryptoJS.AES.encrypt(
+//   JSON.stringify(timestamp),
+//   encryptKey(data)
+// ).toString();
+// console.log("Log", encrypted);
+
+// let encryptedText = CryptoJS.AES.encrypt(
+//   "Hi",
+//   "uYef8kmdy28vnsdie$dmcmwsbxt2"
+// ).toString();
+// console.log(encryptedText);
+
+// let decryptedText = CryptoJS.AES.decrypt(
+//   encryptedText,
+//   "uYef8kmdy28vnsdie$dmcmwsbxt2"
+// ).toString(CryptoJS.enc.Utf8);
+// console.log(decryptedText);
+// const a = { title: "hi", no: 3 };
+// let b = [
+//   { title: "hello", no: 1 },
+//   { title: "hola", no: 2 },
+// ];
+// b = [...b, a];
+// console.log(b);
+// U2FsdGVkX1+YEkYEV7UVpHacv2CSTsSguPW/zzbta83kHMDRQ29UAP3OEmZBDBiI
+
+// const CryptoJS = require("crypto-js");
+const encryptKey = (text) => {
+  const buffer = Buffer.from(text, "utf-8");
+  return buffer.toString("base64");
+};
+
+// const encryptionFunction = (text, key) => {
+//   const encrypted = CryptoJS.AES.encrypt(JSON.stringify(text), key).toString();
+//   return encrypted;
+// };
+
+const decryptionFunction = (text, key) => {
+  try {
+    const decrypted = CryptoJS.AES.decrypt(text, key).toString(
+      CryptoJS.enc.Utf8
+    );
+    // console.log(decrypted);
+    return decrypted;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// console.log(
+//   decryptionFunction(
+//     "U2FsdGVkX1+YEkYEV7UVpHacv2CSTsSguPW/zzbta83kHMDRQ29UAP3OEmZBDBiI",
+//     encryptKey("uK14fE0M6VbcE@2M0cXqWz")
+//   )
+// );
+let decryted = decryptionFunction(
+  "U2FsdGVkX1+YEkYEV7UVpHacv2CSTsSguPW/zzbta83kHMDRQ29UAP3OEmZBDBiI",
+  encryptKey("uK14fE0M6VbcE@2M0cXqWz")
+);
+
+const timestamp = new Date();
+// console.log(timestamp)
+// const encryptKey = (text) => {
+//   const buffer = Buffer.from(text, "utf-8");
+//   return buffer.toString("base64");
+// };
+
+const key = "uK14fE0M6VbcE@2M0cXqWz";
+console.log("Key", encryptKey(key));
+console.log("Timestamp", decryted);
+// console.log(typeof timestamp);
 let encrypted = CryptoJS.AES.encrypt(
-  JSON.stringify(timestamp),
-  encryptKey(data)
+  JSON.stringify(decryted),
+  encryptKey(key)
 ).toString();
-console.log("Log", encrypted);
+console.log(encrypted);

@@ -6,6 +6,27 @@ const bools = [true, false];
 const registertype = ["normal", "google"];
 const deviceType = ["ios", "android", "web"];
 
+const bioSchema = new Schema({
+  full_name: { type: String, default: "" },
+  headline: { type: String, default: "" },
+  highlight: { type: String, default: "" },
+});
+
+const experienceSchema = new Schema({
+  title: { type: String, default: "" },
+  company: { type: String, default: "" },
+  location: { type: String, default: "" },
+  startDate: { type: String, default: "" },
+  endDate: { type: String, default: "" },
+  image: { type: String, default: "" },
+});
+
+const projectSchema = new Schema({
+  project_title: { type: String, default: "" },
+  skills: { type: Array, default: [] },
+  project_link: { type: String, default: "" },
+});
+
 var UserSchema = new Schema(
   {
     full_name: { type: String, default: "" },
@@ -30,9 +51,31 @@ var UserSchema = new Schema(
     isProfileComplete: { type: Boolean, default: false, enum: bools },
     isActive: { type: Boolean, default: true, enum: bools },
     isDeleted: { type: Boolean, default: false, enum: bools },
+    profile_picture: { data: Buffer, contentType: String },
+    bio: { type: bioSchema, default: {} },
+    about: { type: String, default: "" },
+    skills: { type: Array, default: [] },
+    experience: { type: [experienceSchema], default: [] },
+    project: { type: [projectSchema], default: [] },
   },
   { timestamps: true, versionKey: false }
 );
+
+UserSchema.pre("save", async function (next) {
+  // console.log("hi");
+  const user = this;
+  if (user.isModified("full_name")) {
+    user.bio = user.bio || {};
+    user.bio.full_name = user.full_name;
+  }
+  if (user.bio.isModified("full_name")) {
+    console.log("yes");
+    user.full_name = user.bio.full_name;
+    // await user.save();
+  }
+
+  next();
+});
 
 // generating a hash
 UserSchema.methods.generateHash = function (password) {
