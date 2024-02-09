@@ -31,14 +31,18 @@ class profileController {
         type = 3;
       } else if (req.body.type == "experience") {
         type = 4;
-      } else if (req.body.type == "projects") {
+      } else if (req.body.type == "update experience") {
         type = 5;
       } else if (req.body.type == "delete experience") {
         type = 6;
-      } else if (req.body.type == "update experience") {
+      } else if (req.body.type == "project") {
         type = 7;
-      } else {
+      } else if (req.body.type == "update project") {
         type = 8;
+      } else if (req.body.type == "delete project") {
+        type = 9;
+      } else {
+        type = 10;
       }
 
       switch (type) {
@@ -184,7 +188,7 @@ class profileController {
           }
           // console.log(skills);
           break;
-        case 4:
+        case 4: // Add New Experience
           let experience = req.body.experience;
           if (Object.keys(experience).length === 0) {
             return res.status(201).send({
@@ -292,47 +296,7 @@ class profileController {
           }
 
           break;
-        case 5:
-          break;
-        case 6:
-          if (
-            req.body.expid === null ||
-            req.body.expid === "" ||
-            req.body.expid === undefined
-          ) {
-            return res.status(201).send({
-              data: {},
-              message: "Something went wrong",
-            });
-          }
-
-          let user = await userRepo.getById(req.user.id);
-
-          if (Object.keys(user).length === 0) {
-            return res.status(201).send({
-              data: {},
-              message: "User not found!",
-            });
-          }
-
-          const update = {
-            $pull: {
-              experience: { _id: req.body.expid },
-            },
-          };
-
-          const updatedUserDel = await userModel.updateOne(
-            { _id: req.user.id },
-            update
-          );
-          if (updatedUserDel) {
-            return res.status(200).send({
-              data: updatedUserDel,
-              message: "Experience Deleted!",
-            });
-          }
-          break;
-        case 7:
+        case 5: // Update Experience
           //EXPID NOT PRESENT
           if (
             req.body.expid === null ||
@@ -456,6 +420,210 @@ class profileController {
           }
 
           break;
+        case 6: // Delete Experience
+          if (
+            req.body.expid === null ||
+            req.body.expid === "" ||
+            req.body.expid === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Something went wrong",
+            });
+          }
+
+          let user = await userRepo.getById(req.user.id);
+
+          if (Object.keys(user).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          const update = {
+            $pull: {
+              experience: { _id: req.body.expid },
+            },
+          };
+
+          const updatedUserDel = await userModel.updateOne(
+            { _id: req.user.id },
+            update
+          );
+          if (updatedUserDel) {
+            return res.status(200).send({
+              data: updatedUserDel,
+              message: "Experience Deleted!",
+            });
+          }
+          break;
+        case 7: // Add New Projects
+          let project = req.body.project;
+          if (Object.keys(project).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "Project details cannot be empty!",
+            });
+          }
+
+          // PROJECT TITLE IS BLANK
+          if (
+            project.project_title === null ||
+            project.project_title === "" ||
+            project.project_title === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Project title cannot be empty!",
+            });
+          }
+
+          // SKILLS IS BLANK
+          if (
+            project.skills === null ||
+            project.skills === "" ||
+            project.skills === undefined ||
+            project.skills.length === 0
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Skills cannot be empty!",
+            });
+          }
+
+          // PROJECT LINK IS BLANK
+          if (
+            project.project_link === null ||
+            project.project_link === "" ||
+            project.project_link === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Project link cannot be empty!",
+            });
+          }
+
+          var userDataProject = await userRepo.getById(req.user.id);
+
+          if (Object.keys(userDataProject).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          let projects = userDataProject.project;
+          projects = [...projects, project];
+
+          const updatedUserProject = await userRepo.updateById(
+            { project: projects },
+            userDataProject._id
+          );
+
+          if (updatedUserProject) {
+            return res.status(200).send({
+              data: updatedUserProject,
+              message: "New Project added successfully!",
+            });
+          } else {
+            return res.status(201).send({
+              data: {},
+              message: "Something went wrong!",
+            });
+          }
+          break;
+
+        case 8: // Update Project
+          // PROJECT ID NOT PRESENT
+          if (
+            req.body.project_id === null ||
+            req.body.project_id === "" ||
+            req.body.project_id === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Project ID not provided!",
+            });
+          }
+
+          let projectUpdated = req.body.project;
+          if (Object.keys(projectUpdated).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "Project details cannot be empty!",
+            });
+          }
+
+          var userProjectUpdate = await userRepo.getById(req.user.id);
+
+          if (Object.keys(userProjectUpdate).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          const updateProject = {
+            $set: {
+              "project.$.project_title": projectUpdated.project_title,
+              "project.$.skills": projectUpdated.skills,
+              "project.$.project_link": projectUpdated.project_link,
+            },
+          };
+
+          let updateUserProjectUpdate = await userModel.updateOne(
+            { _id: req.user.id, "project._id": req.body.project_id },
+            updateProject
+          );
+
+          if (updateUserProjectUpdate) {
+            return res.status(200).send({
+              data: updateUserProjectUpdate,
+              message: "Project updated!",
+            });
+          }
+          break;
+
+        case 9: // Delete Project
+          if (
+            req.body.project_id === null ||
+            req.body.project_id === "" ||
+            req.body.project_id === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Project ID not provided!",
+            });
+          }
+
+          let userDeleteProject = await userRepo.getById(req.user.id);
+
+          if (Object.keys(userDeleteProject).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          const updateDeleteProject = {
+            $pull: {
+              project: { _id: req.body.project_id },
+            },
+          };
+
+          const updatedUserDeleteProject = await userModel.updateOne(
+            { _id: req.user.id },
+            updateDeleteProject
+          );
+          if (updatedUserDeleteProject) {
+            return res.status(200).send({
+              data: updatedUserDeleteProject,
+              message: "Project Deleted!",
+            });
+          }
+          break;
+
         default:
           return res.status(201).send({
             data: {},
@@ -512,21 +680,19 @@ class profileController {
         if (userData.project.length > 0) {
           completion = completion + 20;
         }
-        if (completion === 100) {
-          let updatedUser = await userRepo.updateById(
-            { isProfileComplete: true },
-            userData._id
-          );
+        // if (completion === 100) {
+        //   let updatedUser = await userRepo.updateById(
+        //     { isProfileComplete: true },
+        //     userData._id
+        //   );
 
-          if (!updatedUser) {
-            res.status(201).send({
-              data: {},
-              message: "Something went wrong!",
-            });
-          }
-        }
-      } else {
-        completion = 100;
+        //   if (!updatedUser) {
+        //     res.status(201).send({
+        //       data: {},
+        //       message: "Something went wrong!",
+        //     });
+        //   }
+        // }
       }
 
       res.status(200).send({
@@ -544,6 +710,43 @@ class profileController {
       });
     }
   }
+
+  // async getProject(req, res) {
+  //     try {
+  //         const userData = await userModel
+  //             .findById(req.user.id)
+  //             .select(
+  //                 "email bio about skills experience project profile_picture isProfileComplete"
+  //             );
+
+  //         if (Object.keys(userData).length === 0) {
+  //             return res.status(201).send({
+  //                 data: {},
+  //                 message: "Something went wrong!",
+  //             });
+  //         }
+
+  //         // Extracting relevant details from each project
+  //         const projects = userData.project.map(project => ({
+  //             projectTitle: project.project_title,
+  //             skills: project.skills,
+  //             projectLink: project.project_link,
+  //         }));
+
+  //         res.status(200).send({
+  //             data: {
+  //                 projects: projects,
+  //             },
+  //             message: "Here are your projects",
+  //         });
+  //     } catch (error) {
+  //         console.log(error);
+  //         return res.status(500).send({
+  //             data: {},
+  //             message: error.message,
+  //         });
+  //     }
+  // }
 
   // async test(req, res) {
   //   console.log(req.body);
