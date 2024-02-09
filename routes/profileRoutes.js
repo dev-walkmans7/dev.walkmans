@@ -71,11 +71,7 @@ router.post(
   profileController.updateProfile
 );
 
-router.get(
-  "/profile/get/profile",
-  requireSignIn,
-  profileController.getExperience
-);
+router.get("/profile/get/profile", requireSignIn, profileController.getProfile);
 
 // router.post("/profile/test", requireSignIn, profileController.test);
 

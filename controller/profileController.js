@@ -639,7 +639,7 @@ class profileController {
     }
   }
 
-  async getExperience(req, res) {
+  async getProfile(req, res) {
     try {
       const userData = await userModel
         .findById(req.user.id)
