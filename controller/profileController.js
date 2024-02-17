@@ -256,16 +256,20 @@ class profileController {
             });
           }
 
-          if (
-            experience.image === null ||
-            experience.image === "" ||
-            experience.image === undefined
-          ) {
-            return res.status(201).send({
-              data: {},
-              message: "Image cannot be empty!",
-            });
-          }
+          // if (
+          //   experience.image === null ||
+          //   experience.image === "" ||
+          //   experience.image === undefined
+          // ) {
+          //   return res.status(201).send({
+          //     data: {},
+          //     message: "Image cannot be empty!",
+          //   });
+          // }
+
+          var image =
+            "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708128000&semt=ais";
+          var fullExp = { ...experience, image: image };
 
           var userData = await userRepo.getById(req.user.id);
 
@@ -276,7 +280,7 @@ class profileController {
             });
           }
           let exp = userData.experience;
-          exp = [...exp, experience];
+          exp = [...exp, fullExp];
 
           const updatedUser = await userRepo.updateById(
             { experience: exp },
@@ -377,16 +381,16 @@ class profileController {
           }
 
           //IMAGE NOT PRESENT
-          if (
-            experienceUpdated.image === null ||
-            experienceUpdated.image === "" ||
-            experienceUpdated.image === undefined
-          ) {
-            return res.status(201).send({
-              data: {},
-              message: "Image cannot be empty!",
-            });
-          }
+          // if (
+          //   experienceUpdated.image === null ||
+          //   experienceUpdated.image === "" ||
+          //   experienceUpdated.image === undefined
+          // ) {
+          //   return res.status(201).send({
+          //     data: {},
+          //     message: "Image cannot be empty!",
+          //   });
+          // }
           let userExpUpdate = await userRepo.getById(req.user.id);
 
           if (Object.keys(userExpUpdate).length === 0) {
@@ -395,15 +399,17 @@ class profileController {
               message: "User not found!",
             });
           }
-
+          var image =
+            "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?size=338&ext=jpg&ga=GA1.1.1700460183.1708128000&semt=ais";
+          var fullExp = { ...experienceUpdated, image: image };
           const updateExp = {
             $set: {
-              "experience.$.title": experienceUpdated.title,
-              "experience.$.company": experienceUpdated.company,
-              "experience.$.location": experienceUpdated.location,
-              "experience.$.startDate": experienceUpdated.startDate,
-              "experience.$.endDate": experienceUpdated.endDate,
-              "experience.$.image": experienceUpdated.image,
+              "experience.$.title": fullExp.title,
+              "experience.$.company": fullExp.company,
+              "experience.$.location": fullExp.location,
+              "experience.$.startDate": fullExp.startDate,
+              "experience.$.endDate": fullExp.endDate,
+              "experience.$.image": fullExp.image,
             },
           };
 
