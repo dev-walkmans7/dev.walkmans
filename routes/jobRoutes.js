@@ -7,4 +7,10 @@ const jobController = require("../controller/jobConroller.js");
 
 router.post("/job/new/post", requireSignIn, jobController.jobPost);
 
+router.post(
+  "/job/update/post/:jobId",
+  requireSignIn,
+  jobController.updateJobPost
+);
+
 module.exports = router;
