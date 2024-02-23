@@ -15,6 +15,7 @@ config = require("./config/config.js");
 //IMPORT ROUTES
 const userRoutes = require("./routes/userRoutes.js");
 const profileRoutes = require("./routes/profileRoutes.js");
+const jobRoutes = require("./routes/jobRoutes.js");
 
 const app = express();
 app.use(express.static(path.join(__dirname, "/public")));
@@ -77,6 +78,7 @@ app.set("view engine", "ejs"); // set up ejs for templating
 
 app.use("/api", userRoutes);
 app.use("/api", profileRoutes);
+app.use("/api", jobRoutes);
 
 const server = http.createServer(app);
 
