@@ -279,6 +279,40 @@ class jobController {
       });
     }
   }
+
+  async deleteJobPost(req, res) {
+    try {
+      // Check if job ID is provided in URL parameters
+      if (!req.params.jobId) {
+        return res.status(400).send({
+          data: {},
+          message: "Job ID is missing in URL parameters",
+        });
+      }
+
+      // Attempt to delete the job post
+      const deletedJob = await jobModel.findByIdAndDelete(req.params.jobId);
+
+      // Check if job post is deleted successfully
+      if (deletedJob) {
+        return res.status(200).send({
+          data: deletedJob,
+          message: "Job Deleted Successfully",
+        });
+      } else {
+        return res.status(404).send({
+          data: {},
+          message: "Job Not Found or Already Deleted",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        data: {},
+        message: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new jobController();
