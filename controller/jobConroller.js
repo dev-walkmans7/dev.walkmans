@@ -9,6 +9,10 @@ const Job = jobModel();
 class jobController {
   jobController() {}
 
+  /*
+   * /@Method: jobPost
+   * /@Description:Post A Job
+   */
   async jobPost(req, res) {
     try {
       //COMPANY NAME MISSING
@@ -140,6 +144,10 @@ class jobController {
     }
   }
 
+  /*
+   * /@Method: updateJobPost
+   * /@Description:Update the Job already Posted
+   */
   async updateJobPost(req, res) {
     try {
       //COMPANY NAME MISSING
@@ -280,6 +288,10 @@ class jobController {
     }
   }
 
+  /*
+   * /@Method: deleteJobPost
+   * /@Description: Delete the job that has been posted
+   */
   async deleteJobPost(req, res) {
     try {
       // Check if job ID is provided in URL parameters
@@ -313,6 +325,12 @@ class jobController {
       });
     }
   }
+
+  /*
+   * /@Method: getAllJobs
+   * /@Description: List all the jobs present in descending order of creation time.
+   */
+  async getAllJobs(req, res) {}
 }
 
 module.exports = new jobController();

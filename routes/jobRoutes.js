@@ -12,10 +12,15 @@ router.post(
   requireSignIn,
   jobController.updateJobPost
 );
+
 router.delete(
   "/job/delete/post/:jobId",
   requireSignIn,
   jobController.deleteJobPost
 );
+
+router.get("/job/get/jobs", requireSignIn, jobController.getAllJobs);
+
+router.get("/job/get/job/:jobId", requireSignIn, jobController.getJobById);
 
 module.exports = router;
