@@ -41,8 +41,10 @@ class profileController {
         type = 8;
       } else if (req.body.type == "delete project") {
         type = 9;
-      } else {
+      } else if (req.body.type == "profile picture") {
         type = 10;
+      } else {
+        type = 11;
       }
 
       switch (type) {
@@ -626,6 +628,40 @@ class profileController {
             return res.status(200).send({
               data: updatedUserDeleteProject,
               message: "Project Deleted!",
+            });
+          }
+          break;
+
+        case 10:
+          //IMAGE LINK NOT PRESENT
+          if (
+            req.body.profile_picture === "" ||
+            req.body.profile_picture === null ||
+            req.body.profile_picture === undefined
+          ) {
+            return res.status(201).send({
+              data: {},
+              message: "Profile Picture is empty!!!",
+            });
+          }
+
+          var userData = await userRepo.getById(req.user.id);
+          if (Object.keys(userData).length === 0) {
+            return res.status(201).send({
+              data: {},
+              message: "User not found!",
+            });
+          }
+
+          let updatedUserDP = await userRepo.updateById(
+            { profile_pic: req.body.profile_picture },
+            userData._id
+          );
+
+          if (updatedUserDP) {
+            return res.status(200).send({
+              data: updatedUserDP,
+              message: "Profile Picture Updated!",
             });
           }
           break;

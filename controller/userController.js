@@ -524,6 +524,43 @@ class userController {
     const d = new Date(JSON.parse(decrypted));
     console.log(d);
   }
+
+  /*
+   * /@Method: deleteUser
+   * /@Description:Delete the User Data
+   */
+  async deleteUser(req, res) {
+    try {
+      if (!req.params.id) {
+        return res.status(400).send({
+          data: {},
+          message: "User id is missing in URL Parameters!",
+        });
+      }
+      const userData = await userRepo.getById(req.user.id);
+
+      if (Object.keys(userData).length === 0) {
+        return res.status(201).send({
+          data: {},
+          message: "User doesn't exist!",
+        });
+      }
+
+      const deletedUser = await userRepo.delete(req.user.id);
+
+      if (deletedUser) {
+        return res.status(200).send({
+          data: deletedUser,
+          message: "Account Deleted!",
+        });
+      }
+    } catch (error) {
+      return res.status(500).send({
+        data: {},
+        message: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new userController();

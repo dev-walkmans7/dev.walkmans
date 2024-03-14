@@ -3,6 +3,7 @@ const routeLlabel = require("route-label");
 const router = express.Router();
 // const namedRouter = routeLlabel(router)
 const userController = require("../controller/userController.js");
+const { requireSignIn } = require("../middlewares/middleware.js");
 
 /**
  * @api {post} /user/signup Signup
@@ -125,6 +126,12 @@ router.post("/user/validate/otp", userController.validateOtp);
 }
 */
 router.post("/user/change/password", userController.changePassword);
+
+router.delete(
+  "/user/delete/user/:id",
+  requireSignIn,
+  userController.deleteUser
+);
 
 router.post("/test", userController.test);
 
